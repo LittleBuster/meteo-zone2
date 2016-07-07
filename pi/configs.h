@@ -9,7 +9,19 @@
  * of the Licence, or (at your option) any later version.
  */
 
-int main(void)
-{	
-	return 0;
-}
+#ifndef __CONFIGS_H__
+#define __CONFIGS_H__
+
+#include <stdbool.h>
+
+/**
+ * Loading configs from file to RAM
+ * @filename: name of json configs file
+ *
+ * returns -1: if fail loading
+ * returns 0: if succeful loading
+ */
+bool configs_load(const char *filename);
+
+
+#endif
