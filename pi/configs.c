@@ -21,7 +21,7 @@
 } cfg = {
 };*/
 
-bool json_configs_load(const char *filename)
+bool configs_load(const char *filename)
 {
     json_t *root;
 

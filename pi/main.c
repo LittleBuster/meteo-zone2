@@ -8,8 +8,13 @@
  * as published by the Free Software Foundation; either version 3
  * of the Licence, or (at your option) any later version.
  */
+#include "log.h"
+#include "configs.h"
+
 
 int main(void)
-{	
+{
+	log_set_path("/var/log/meteo.log");
+	configs_load("/etc/meteo.cfg");	
 	return 0;
 }

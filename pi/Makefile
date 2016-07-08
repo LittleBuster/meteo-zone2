@@ -5,8 +5,8 @@ LDFLAGS=-ljansson
 
 all: meteo
 
-meteo: main.o dht22.o gpio.o tcpclient.o configs.o
-	$(CC) main.o dht22.o gpio.o tcpclient.o configs.o -o meteo $(CFLAGS) $(LDFLAGS)
+meteo: main.o dht22.o gpio.o tcpclient.o configs.o utils.o log.o
+	$(CC) main.o dht22.o gpio.o tcpclient.o configs.o utils.o log.o -o meteo $(CFLAGS) $(LDFLAGS)
 
 main.o: main.c
 	$(CC) -c main.c $(CFLAGS)
@@ -22,6 +22,12 @@ configs.o: configs.c
 
 tcpclient.o: tcpclient.c
 	$(CC) -c tcpclient.c $(CFLAGS)
+
+log.o: log.c
+	$(CC) -c log.c $(CFLAGS)
+
+utils.o: utils.c
+	$(CC) -c utils.c $(CFLAGS)
 
 
 clean:
