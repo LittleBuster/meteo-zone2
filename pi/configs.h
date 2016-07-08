@@ -14,12 +14,32 @@
 
 #include <stdbool.h>
 
+struct checker_cfg {
+	unsigned interval;	
+};
+
+struct server_cfg {
+	char ip[16];
+	unsigned port;
+};
+
+
+/*
+ * Checker timer configs
+ */
+struct checker_cfg *configs_get_checker();
+
+/*
+ * Remote tcp server configs
+ */
+struct server_cfg *configs_get_server();
+
 /**
  * Loading configs from file to RAM
  * @filename: name of json configs file
  *
- * returns -1: if fail loading
- * returns 0: if succeful loading
+ * returns false: if fail loading
+ * returns true: if succeful loading
  */
 bool configs_load(const char *filename);
 

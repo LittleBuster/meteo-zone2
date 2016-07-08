@@ -17,36 +17,59 @@
 #include <jansson.h>
 
 
-/*static struct {
-} cfg = {
-};*/
+static struct {
+    struct checker_cfg cc;
+    struct server_cfg sc;
+} cfg;
+
 
 bool configs_load(const char *filename)
 {
     json_t *root;
+    json_t *jdata;
 
     root = json_load_file(filename, 0, NULL);
-    if (root == NULL) {
-        puts("Fail reading configs file.");
-        return -1;
-    }
-    json_t *jdata = json_object_get(root, "Server");
+    if (root == NULL) 
+        return false;
+
+    /*
+     * Server cfg
+     */
+    jdata = json_object_get(root, "Server");
     if (jdata == NULL) {
         json_decref(root);
-        return -1;
+        return false;
     }
     json_t *jsobj = json_object_get(jdata, "Ip");
     if (jsobj != NULL) {
         puts(json_string_value(jsobj));
-        json_decref(jsobj);
+        json_decref(jdata);
+        json_decref(root);
+        return false;
     }
+    json_decref(jsobj);
+
     jsobj = json_object_get(jdata, "Port");
     if (jsobj != NULL) {
         puts(json_string_value(jsobj));
         json_decref(jsobj);
+        json_decref(jdata);
+        json_decref(root);
+        return false;
     }
+    json_decref(jsobj);
     json_decref(jdata);
 
     json_decref(root);
     return true;
+}
+
+struct checker_cfg *configs_get_checker()
+{
+    return &cfg.cc;
+}
+
+struct server_cfg *configs_get_server()
+{
+    return &cfg.sc;
 }

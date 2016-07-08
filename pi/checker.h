@@ -8,18 +8,14 @@
  * as published by the Free Software Foundation; either version 3
  * of the Licence, or (at your option) any later version.
  */
-#include "log.h"
-#include "configs.h"
-#include "checker.h"
+#ifndef __CHECKER_H__
+#define __CHECKER_H__
 
 
-int main(void)
-{
-	log_set_path("/var/log/meteo.log");
-	if (!configs_load("/etc/meteo.cfg")) {
-		log_local("Fail reading configs file.", LOG_ERROR);
-		return -1;
-	}
-	checker_start();
-	return 0;
-}
+/*
+ * Starting main app timer
+ */
+void checker_start();
+
+
+#endif

@@ -33,11 +33,7 @@ bool log_local(const char *message, unsigned log_type)
 {
 	FILE *file;
 	char out_msg[255];
-	char date_time[DATETIME_SIZE];
-
-	file = fopen(log.path, "a");
-	if (file == NULL)
-		return false;
+	char date_time[DATETIME_SIZE];	
 
 	date_time_now(date_time);
 	strcpy(out_msg, "[");
@@ -59,7 +55,11 @@ bool log_local(const char *message, unsigned log_type)
 		}
 	}
 	strcat(out_msg, message);
+	puts(out_msg);
 
+	file = fopen(log.path, "a");
+	if (file == NULL)
+		return false;
 	if (!fputs(out_msg, file)) {
 		fclose(file);
 		return false;
