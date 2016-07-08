@@ -14,6 +14,9 @@
 #include "dht22.h"
 #include "tcpclient.h"
 #include <errno.h>
+#include <stdio.h>
+#include <string.h>
+
 
 static struct {
 	struct dht22 dht_in;
@@ -30,7 +33,7 @@ static void checker_handle()
 void checker_start(void)
 {
 	struct checker_cfg *cc = configs_get_checker();
-
+	
     for (;;) {
         struct timeval tv = {cc->interval, 0};
         if (select(0, NULL, NULL, NULL, &tv) == -1)
