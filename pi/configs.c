@@ -20,6 +20,8 @@
 static struct {
     struct checker_cfg cc;
     struct server_cfg sc;
+    struct device_cfg dc;
+    struct sensors_cfg ss;
 } cfg;
 
 
@@ -80,6 +82,56 @@ bool configs_load(const char *filename)
     json_decref(jsobj);
     json_decref(jdata);
 
+    /*
+     * Device cfg
+     */
+    jdata = json_object_get(root, "Device");
+    if (jdata == NULL) {
+        json_decref(root);
+        return false;
+    }
+
+    jsobj = json_object_get(jdata, "Id");
+    if (jsobj == NULL) {        
+        json_decref(jsobj);
+        json_decref(jdata);
+        json_decref(root);
+        return false;
+    }
+    cfg.dc.id = json_integer_value(jsobj);
+    json_decref(jsobj);
+    json_decref(jdata);
+
+    /*
+     * Sensorscfg
+     */
+    jdata = json_object_get(root, "Sensors");
+    if (jdata == NULL) {
+        json_decref(root);
+        return false;
+    }
+
+    jsobj = json_object_get(jdata, "DhtIn");
+    if (jsobj == NULL) {
+        json_decref(jsobj);
+        json_decref(jdata);
+        json_decref(root);
+        return false;
+    }
+    cfg.ss.dht_in = json_integer_value(jsobj);
+    json_decref(jsobj);
+
+    jsobj = json_object_get(jdata, "DhtOut");
+    if (jsobj == NULL) {
+        json_decref(jsobj);
+        json_decref(jdata);
+        json_decref(root);
+        return false;
+    }
+    cfg.ss.dht_out = json_integer_value(jsobj);
+    json_decref(jsobj);
+    json_decref(jdata);
+
     json_decref(root);
     return true;
 }
@@ -92,4 +144,14 @@ struct checker_cfg *configs_get_checker()
 struct server_cfg *configs_get_server()
 {
     return &cfg.sc;
+}
+
+struct device_cfg *configs_get_device()
+{
+    return &cfg.dc;
+}
+
+struct sensors_cfg *configs_get_sensors()
+{
+    return &cfg.ss;
 }

@@ -20,6 +20,7 @@ int main(void)
 		log_local("Fail reading configs file.", LOG_ERROR);
 		return -1;
 	}
-	checker_start();
+	if (!checker_start())
+		return -1;
 	return 0;
 }

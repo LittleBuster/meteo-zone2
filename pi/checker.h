@@ -11,11 +11,12 @@
 #ifndef __CHECKER_H__
 #define __CHECKER_H__
 
+#include <stdbool.h>
 
 /*
  * Starting main app timer
  */
-void checker_start();
+bool checker_start();
 
 
 #endif

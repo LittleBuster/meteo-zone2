@@ -23,6 +23,15 @@ struct server_cfg {
 	unsigned port;
 };
 
+struct device_cfg {
+	unsigned id;	
+};
+
+struct sensors_cfg {
+	unsigned dht_in;
+	unsigned dht_out;
+};
+
 
 /*
  * Checker timer configs
@@ -33,6 +42,16 @@ struct checker_cfg *configs_get_checker();
  * Remote tcp server configs
  */
 struct server_cfg *configs_get_server();
+
+/*
+ * Device configs
+ */
+struct device_cfg *configs_get_device();
+
+/*
+ * Sensors configs
+ */
+struct sensors_cfg *configs_get_sensors();
 
 /**
  * Loading configs from file to RAM
