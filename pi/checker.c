@@ -58,8 +58,8 @@ static void checker_handle()
 		}
 
 		if (s_in && s_out) {
-			printf("Inside sensor: Temp: %f Hum: %f\n", sdata.temp_in, sdata.hum_in);
-			printf("Outside sensor: Temp: %f Hum: %f\n", sdata.temp_out, sdata.hum_out);
+			printf("Inside sensor: Temp: %.2f Hum: %.2f\n", sdata.temp_in, sdata.hum_in);
+			printf("Outside sensor: Temp: %.2f Hum: %.2f\n", sdata.temp_out, sdata.hum_out);
 			break;
 		}
 		else
