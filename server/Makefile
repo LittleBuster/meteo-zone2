@@ -33,7 +33,7 @@ meteoserver.o: meteoserver.c
 
 install:
 	-mkdir /usr/share/meteosrv
-	-cp /usr/share/meteosrv/meteosrv
+	-cp meteosrv /usr/share/meteosrv/
 	-cp meteosrv.cfg /etc/
 
 remove:
