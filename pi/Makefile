@@ -33,6 +33,15 @@ checker.o: checker.c
 	$(CC) -c checker.c $(CFLAGS)
 
 
+install:
+	mkdir /usr/share/meteo
+	cp meteo.cfg /etc/
+	cp meteo /usr/share/meteo/
+
+remove:
+	rm -rf /usr/share/meteo/
+	rm /etc/meyeo.cfg
+
 clean:
 	-rm meteo
 	-rm *.o
