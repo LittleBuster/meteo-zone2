@@ -31,7 +31,7 @@ static struct {
 } mserver;
 
 
-void new_session(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex)
+void new_session(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex, void *user_data)
 {
 	struct recv_data rdata;
 
@@ -52,7 +52,7 @@ bool meteo_server_start()
 {
 	struct server_cfg *sc = configs_get_server();
 
-	tcp_server_set_cb(&mserver.server, new_session, NULL);
+	tcp_server_set_newsession_cb(&mserver.server, new_session, NULL);
 	if (!tcp_server_bind(&mserver.server, sc->port, sc->max_users)) {
 		log_local("Fail binding tcp server.", LOG_ERROR);
 		return false;

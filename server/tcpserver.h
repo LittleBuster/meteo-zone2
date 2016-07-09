@@ -32,7 +32,8 @@ struct tcp_server {
     pthread_mutex_t mutex;
 
     /* User data */
-    void *data;
+    void *new_session_data;
+    void *accept_error_data;
 
     /**
      * Client accept error signal
@@ -43,7 +44,7 @@ struct tcp_server {
     /*
      * New client session
      */
-    void (*new_session)(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex);
+    void (*new_session)(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex, void *user_data);
 };
 
 
@@ -53,12 +54,20 @@ struct tcp_server {
 void tcp_server_init(struct tcp_server *restrict sock);
 
 /**
- * Setting server callback
+ * Setting server accept error callback
+ * @sock: server socket
+ * @accept_error: accepting error functiob pointer
+ * @data: user data
+ */
+void tcp_server_set_accepterr_cb(struct tcp_server *restrict sock, void (*accept_error)(void*), void *data);
+
+/**
+ * Setting server new client callback
  * @sock: server socket
  * @new_session: new session function pointer
  * @data: user data
  */
-void tcp_server_set_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client *, void *, pthread_mutex_t *), void *data);
+void tcp_server_set_newsession_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client*, void*, pthread_mutex_t*, void*), void *data);
 
 /**
  * Bind ip address and starting socket server
