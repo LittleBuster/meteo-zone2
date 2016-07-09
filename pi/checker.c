@@ -57,8 +57,11 @@ static void checker_handle()
 			log_local(err.message, LOG_ERROR);
 		}
 
-		if (s_in && s_out)
+		if (s_in && s_out) {
+			printf("Inside sensor: Temp: %f Hum: %f\n", sdata.temp_in, sdata.hum_in);
+			printf("Outside sensor: Temp: %f Hum: %f\n", sdata.temp_out, sdata.hum_out);
 			break;
+		}
 		else
 			sleep(1000);
 		printf("Retry reading sensors... %d\n", (int)i);
