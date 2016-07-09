@@ -50,6 +50,15 @@ bool configs_load(const char *filename)
     }
     cfg.sc.port = json_integer_value(jsobj);
     json_decref(jsobj);
+    jsobj = json_object_get(jdata, "MaxUsers");
+    if (jsobj == NULL) {        
+        json_decref(jsobj);
+        json_decref(jdata);
+        json_decref(root);
+        return false;
+    }
+    cfg.sc.max_users = json_integer_value(jsobj);
+    json_decref(jsobj);
     json_decref(jdata);
 
     /*
@@ -67,7 +76,7 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    strcpy(cfg.dbc.ip, json_string_value(jsobj));
+    strncpy(cfg.dbc.ip, json_string_value(jsobj), 15);
     json_decref(jsobj);
     json_decref(jdata);
 
@@ -78,7 +87,7 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    cfg.sc.port = json_integer_value(jsobj);
+    strncpy(cfg.dbc.user, json_string_value(jsobj), 19);
     json_decref(jsobj);
     json_decref(jdata);
 
@@ -89,7 +98,7 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    cfg.sc.port = json_integer_value(jsobj);
+    strncpy(cfg.dbc.passwd, json_string_value(jsobj), 19);
     json_decref(jsobj);
     json_decref(jdata);
 
@@ -100,7 +109,7 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    cfg.sc.port = json_integer_value(jsobj);
+    strncpy(cfg.dbc.base, json_string_value(jsobj), 19);
     json_decref(jsobj);
     json_decref(jdata);
 

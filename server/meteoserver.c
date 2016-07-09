@@ -12,6 +12,18 @@
 #include "meteoserver.h"
 #include "tcpserver.h"
 #include "log.h"
+#include "configs.h"
+#include <stdio.h>
+#include <string.h>
+
+struct recv_data
+{
+	unsigned device_id;
+	float temp_in;
+	float temp_out;
+	float hum_in;
+	float hum_out;
+};
 
 
 static struct {
@@ -21,12 +33,27 @@ static struct {
 
 void new_session(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex)
 {
+	struct recv_data rdata;
+
+	if (!tcp_client_recv(s_client, (void *)&rdata, sizeof(rdata))) {
+		pthread_mutex_lock(mutex);
+		log_local("Fail receiving data.", LOG_ERROR);
+		pthread_mutex_unlock(mutex);
+		return;
+	}
+
+	printf("ID: %d\n", (int)rdata.device_id);
+	printf("Inside: Temp: %.2f Hum: %.2f\n", rdata.temp_in, rdata.hum_in);
+	printf("Outside: Temp: %.2f Hum: %.2f\n", rdata.temp_out, rdata.hum_out);
+	puts("================================");
 }
 
 bool meteo_server_start()
 {
+	struct server_cfg *sc = configs_get_server();
+
 	tcp_server_set_cb(&mserver.server, new_session, NULL);
-	if (!tcp_server_bind(&mserver.server, 5000, 1000)) {
+	if (!tcp_server_bind(&mserver.server, sc->port, sc->max_users)) {
 		log_local("Fail binding tcp server.", LOG_ERROR);
 		return false;
 	}

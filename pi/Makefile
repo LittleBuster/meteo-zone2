@@ -40,7 +40,7 @@ install:
 
 remove:
 	rm -rf /usr/share/meteo/
-	rm /etc/meteo.cfg
+	rm /etc/meyeo.cfg
 
 clean:
 	-rm meteo

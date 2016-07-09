@@ -16,11 +16,12 @@
 
 struct server_cfg {
 	unsigned port;
+	unsigned max_users;
 };
 
 struct database_cfg {
 	char ip[16];
-	char username[20];
+	char user[20];
 	char passwd[20];
 	char base[20];
 };
