@@ -11,8 +11,17 @@
 #ifndef __METEOSERVER_H__
 #define __METEOSERVER_H__
 
-
 #include <stdbool.h>
+
+struct recv_data
+{
+	unsigned device_id;
+	float temp_in;
+	float temp_out;
+	float hum_in;
+	float hum_out;
+};
+
 
 /*
  * Starting meteo server

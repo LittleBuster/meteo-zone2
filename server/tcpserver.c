@@ -20,7 +20,7 @@ struct sock_data {
 };
 
 
-void *new_client(void *data)
+static void *new_client(void *data)
 {
     struct sock_data *sdata = (struct sock_data *)data;
 

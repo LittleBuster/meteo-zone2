@@ -41,5 +41,5 @@ remove:
 	rm /etc/meteosrv.cfg
 
 clean:
-	-rm meteo
+	-rm meteosrv
 	-rm *.o

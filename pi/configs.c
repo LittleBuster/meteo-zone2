@@ -25,11 +25,42 @@ static struct {
 } cfg;
 
 
+static bool get_string_value(json_t *root, json_t *object, const char *value, char *out_str, unsigned size)
+{
+    json_t *jsobj;
+
+    jsobj = json_object_get(object, value);
+    if (jsobj == NULL) {
+        json_decref(jsobj);
+        json_decref(object);
+        json_decref(root);
+        return false;
+    }
+    strncpy(out_str, json_string_value(jsobj), size);
+    json_decref(jsobj);
+    return true;
+}
+
+static bool get_integer_value(json_t *root, json_t *object, const char *value, int *out_val)
+{
+    json_t *jsobj;
+
+    jsobj = json_object_get(object, value);
+    if (jsobj == NULL) {
+        json_decref(jsobj);
+        json_decref(object);
+        json_decref(root);
+        return false;
+    }
+    *out_val = json_integer_value(jsobj);
+    json_decref(jsobj);
+    return true;
+}
+
 bool configs_load(const char *filename)
 {
     json_t *root;
     json_t *jdata;
-    json_t *jsobj;
 
     root = json_load_file(filename, 0, NULL);
     if (root == NULL) 
@@ -43,15 +74,8 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    jsobj = json_object_get(jdata, "Interval");
-    if (jsobj == NULL) {
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
+    if (!get_integer_value(root, jdata, "Interval", (int *)&cfg.cc.interval))
         return false;
-    }
-    cfg.cc.interval = json_integer_value(jsobj);
-    json_decref(jsobj);
     json_decref(jdata);
 
     /*
@@ -62,24 +86,10 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    jsobj = json_object_get(jdata, "Ip");
-    if (jsobj == NULL) {        
-        json_decref(jdata);
-        json_decref(root);
+    if (!get_string_value(root, jdata, "Ip", cfg.sc.ip, 15))
         return false;
-    }
-    strcpy(cfg.sc.ip, json_string_value(jsobj));
-    json_decref(jsobj);
-
-    jsobj = json_object_get(jdata, "Port");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
+    if (!get_integer_value(root, jdata, "Port", (int *)&cfg.sc.port))
         return false;
-    }
-    cfg.sc.port = json_integer_value(jsobj);
-    json_decref(jsobj);
     json_decref(jdata);
 
     /*
@@ -90,16 +100,8 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-
-    jsobj = json_object_get(jdata, "Id");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
+    if (!get_integer_value(root, jdata, "Port", (int *)&cfg.dc.id))
         return false;
-    }
-    cfg.dc.id = json_integer_value(jsobj);
-    json_decref(jsobj);
     json_decref(jdata);
 
     /*
@@ -110,28 +112,12 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-
-    jsobj = json_object_get(jdata, "DhtIn");
-    if (jsobj == NULL) {
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
+    if (!get_integer_value(root, jdata, "DhtIn", (int *)&cfg.ss.dht_in))
         return false;
-    }
-    cfg.ss.dht_in = json_integer_value(jsobj);
-    json_decref(jsobj);
-
-    jsobj = json_object_get(jdata, "DhtOut");
-    if (jsobj == NULL) {
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
+    if (!get_integer_value(root, jdata, "DhtOut", (int *)&cfg.ss.dht_out))
         return false;
-    }
-    cfg.ss.dht_out = json_integer_value(jsobj);
-    json_decref(jsobj);
+
     json_decref(jdata);
-
     json_decref(root);
     return true;
 }

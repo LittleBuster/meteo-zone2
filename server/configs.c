@@ -23,11 +23,42 @@ static struct {
 } cfg;
 
 
+static bool get_string_value(json_t *root, json_t *object, const char *value, char *out_str, unsigned size)
+{
+	json_t *jsobj;
+
+	jsobj = json_object_get(object, value);
+    if (jsobj == NULL) {
+        json_decref(jsobj);
+        json_decref(object);
+        json_decref(root);
+        return false;
+    }
+    strncpy(out_str, json_string_value(jsobj), size);
+    json_decref(jsobj);
+    return true;
+}
+
+static bool get_integer_value(json_t *root, json_t *object, const char *value, int *out_val)
+{
+	json_t *jsobj;
+
+	jsobj = json_object_get(object, value);
+    if (jsobj == NULL) {
+        json_decref(jsobj);
+        json_decref(object);
+        json_decref(root);
+        return false;
+    }
+    *out_val = json_integer_value(jsobj);
+    json_decref(jsobj);
+    return true;
+}
+
 bool configs_load(const char *filename)
 {
     json_t *root;
     json_t *jdata;
-    json_t *jsobj;
 
     root = json_load_file(filename, 0, NULL);
     if (root == NULL) 
@@ -41,24 +72,10 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    jsobj = json_object_get(jdata, "Port");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
-        return false;
-    }
-    cfg.sc.port = json_integer_value(jsobj);
-    json_decref(jsobj);
-    jsobj = json_object_get(jdata, "MaxUsers");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
-        return false;
-    }
-    cfg.sc.max_users = json_integer_value(jsobj);
-    json_decref(jsobj);
+    if (!get_integer_value(root, jdata, "Port", (int *)&cfg.sc.port))
+    	return false;
+    if (!get_integer_value(root, jdata, "MaxUsers", (int *)&cfg.sc.max_users))
+    	return false;
     json_decref(jdata);
 
     /*
@@ -69,48 +86,14 @@ bool configs_load(const char *filename)
         json_decref(root);
         return false;
     }
-    jsobj = json_object_get(jdata, "Ip");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
-        return false;
-    }
-    strncpy(cfg.dbc.ip, json_string_value(jsobj), 15);
-    json_decref(jsobj);
-    json_decref(jdata);
-
-    jsobj = json_object_get(jdata, "User");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
-        return false;
-    }
-    strncpy(cfg.dbc.user, json_string_value(jsobj), 19);
-    json_decref(jsobj);
-    json_decref(jdata);
-
-    jsobj = json_object_get(jdata, "Passwd");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
-        return false;
-    }
-    strncpy(cfg.dbc.passwd, json_string_value(jsobj), 19);
-    json_decref(jsobj);
-    json_decref(jdata);
-
-    jsobj = json_object_get(jdata, "Base");
-    if (jsobj == NULL) {        
-        json_decref(jsobj);
-        json_decref(jdata);
-        json_decref(root);
-        return false;
-    }
-    strncpy(cfg.dbc.base, json_string_value(jsobj), 19);
-    json_decref(jsobj);
+    if (!get_string_value(root, jdata, "Ip", cfg.dbc.ip, 15))
+    	return false;
+    if (!get_string_value(root, jdata, "User", cfg.dbc.user, 19))
+    	return false;
+    if (!get_string_value(root, jdata, "Passwd", cfg.dbc.passwd, 19))
+    	return false;
+    if (!get_string_value(root, jdata, "Base", cfg.dbc.base, 19))
+    	return false;
     json_decref(jdata);
 
     json_decref(root);

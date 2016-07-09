@@ -16,22 +16,13 @@
 #include <stdio.h>
 #include <string.h>
 
-struct recv_data
-{
-	unsigned device_id;
-	float temp_in;
-	float temp_out;
-	float hum_in;
-	float hum_out;
-};
-
 
 static struct {
 	struct tcp_server server;
 } mserver;
 
 
-void new_session(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex, void *user_data)
+static void new_session(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex, void *user_data)
 {
 	struct recv_data rdata;
 
@@ -52,6 +43,7 @@ bool meteo_server_start()
 {
 	struct server_cfg *sc = configs_get_server();
 
+	puts("Starting server...");
 	tcp_server_set_newsession_cb(&mserver.server, new_session, NULL);
 	if (!tcp_server_bind(&mserver.server, sc->port, sc->max_users)) {
 		log_local("Fail binding tcp server.", LOG_ERROR);
