@@ -87,10 +87,7 @@ bool checker_start(void)
 		log_local("Fail init inside sensor.", LOG_ERROR);
 		return false;
 	}
-	if (!dht22_init(&checker.dht_out, ss->dht_out)) {
-		log_local("Fail init outside sensor.", LOG_ERROR);
-		return false;
-	}
+	dht22_init(&checker.dht_out, ss->dht_out);
 
     for (;;) {
         struct timeval tv = {cc->interval, 0};
