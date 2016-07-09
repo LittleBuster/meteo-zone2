@@ -7,7 +7,7 @@ LDFLAGS2=-lpthread
 all: meteo
 
 meteo: main.o tcpclient.o configs.o utils.o log.o tcpserver.o meteoserver.o
-	$(CC) main.o tcpclient.o configs.o utils.o log.o tcpserver.o meteoserver.o -o meteo $(CFLAGS) $(LDFLAGS) $(LDFLAGS2)
+	$(CC) main.o tcpclient.o configs.o utils.o log.o tcpserver.o meteoserver.o -o meteosrv $(CFLAGS) $(LDFLAGS) $(LDFLAGS2)
 
 main.o: main.c
 	$(CC) -c main.c $(CFLAGS)
