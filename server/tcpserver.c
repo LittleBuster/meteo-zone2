@@ -39,13 +39,18 @@ void tcp_server_init(struct tcp_server *restrict sock)
     pthread_mutex_init(&sock->mutex, NULL);
 }
 
-bool tcp_server_bind(struct tcp_server *sock, const unsigned short port, const unsigned max_clients, void *data)
+void tcp_server_set_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client *, void *, pthread_mutex_t *), void *data)
+{
+    sock->new_session = new_session;
+    sock->data = data;
+}
+
+bool tcp_server_bind(struct tcp_server *sock, const unsigned short port, const unsigned max_clients)
 {
     int ret_val;
     SOCKET s_client;
     struct sockaddr_in sock_addr;
 
-    sock->data = data;
     sock->s = socket(AF_INET, SOCK_STREAM, 0);
     if (sock->s == INVALID_SOCKET)
         return false;

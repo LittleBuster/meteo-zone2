@@ -6,8 +6,8 @@ LDFLAGS2=-lpthread
 
 all: meteo
 
-meteo: main.o tcpclient.o configs.o utils.o log.o tcpserver.o
-	$(CC) main.o tcpclient.o configs.o utils.o log.o tcpserver.o -o meteo $(CFLAGS) $(LDFLAGS) $(LDFLAGS2)
+meteo: main.o tcpclient.o configs.o utils.o log.o tcpserver.o meteoserver.o
+	$(CC) main.o tcpclient.o configs.o utils.o log.o tcpserver.o meteoserver.o -o meteo $(CFLAGS) $(LDFLAGS) $(LDFLAGS2)
 
 main.o: main.c
 	$(CC) -c main.c $(CFLAGS)
@@ -27,6 +27,18 @@ utils.o: utils.c
 tcpserver.o: tcpserver.c
 	$(CC) -c tcpserver.c $(CFLAGS) $(LDFLAGS2)
 
+meteoserver.o: meteoserver.c
+	$(CC) -c meteoserver.c $(CFLAGS) $(LDFLAGS2)
+
+
+install:
+	-mkdir /usr/share/meteosrv
+	-cp /usr/share/meteosrv/meteosrv
+	-cp meteosrv.cfg /etc/
+
+remove:
+	rm -rf /usr/share/meteosrv
+	rm /etc/meteosrv.cfg
 
 clean:
 	-rm meteo

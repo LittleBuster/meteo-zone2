@@ -63,7 +63,7 @@ static void checker_handle()
 			break;
 		}
 		else
-			sleep(1000);
+			sleep(1);
 		printf("Retry reading sensors... %d\n", (int)i);
 	}
 

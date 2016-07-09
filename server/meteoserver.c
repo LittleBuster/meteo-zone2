@@ -8,26 +8,27 @@
  * as published by the Free Software Foundation; either version 3
  * of the Licence, or (at your option) any later version.
  */
-#include "log.h"
-#include "configs.h"
+
 #include "meteoserver.h"
-#include <stdio.h>
-#include <string.h>
+#include "tcpserver.h"
+#include "log.h"
 
 
-int main()
+static struct {
+	struct tcp_server server;
+} mserver;
+
+
+void new_session(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex)
 {
-	if (!log_set_path("/var/log/meteosrv.log")) {
-		puts("Fail setting log path. Path is to long.");
-		return -1;
+}
+
+bool meteo_server_start()
+{
+	tcp_server_set_cb(&mserver.server, new_session, NULL);
+	if (!tcp_server_bind(&mserver.server, 5000, 1000)) {
+		log_local("Fail binding tcp server.", LOG_ERROR);
+		return false;
 	}
-	if (!configs_load("/etc/meteosrv.cfg")) {
-		log_local("Fail reading configs file.", LOG_ERROR);
-		return -1;
-	}
-	if (!meteo_server_start()) {
-		log_local("Fail starting meteo server.", LOG_ERROR);
-		return -1;
-	}
-	return 0;
+	return true;
 }

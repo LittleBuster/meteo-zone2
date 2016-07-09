@@ -53,17 +53,24 @@ struct tcp_server {
 void tcp_server_init(struct tcp_server *restrict sock);
 
 /**
+ * Setting server callback
+ * @sock: server socket
+ * @new_session: new session function pointer
+ * @data: user data
+ */
+void tcp_server_set_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client *, void *, pthread_mutex_t *), void *data);
+
+/**
  * Bind ip address and starting socket server
  * @sock: socket struct
  * @ip: ip address of server
  * @port: tcp port of server
  * @max_clients: maximum connected clients
- * @data: user data
  *
  * Returns true if succeful starting
  * Returns false if fail binding ip address or port
  */
-bool tcp_server_bind(struct tcp_server *sock, const unsigned short port, const unsigned max_clients, void *data);
+bool tcp_server_bind(struct tcp_server *sock, const unsigned short port, const unsigned max_clients);
 
 
 #endif
