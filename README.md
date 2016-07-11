@@ -16,10 +16,10 @@ cd /usr/share/meteosrv/
 chmod +x meteosrv
 cd /etc/systemd/system/
 cp sshd.service meteosrv.service
-vim cp meteosrv.service
+vim meteosrv.service
 
-#change to "ExecStart=/usr/share/meteosrv/meteosrv"
-#change to "Alias=meteosrv.service"
+#change ExecStart to "ExecStart=/usr/share/meteosrv/meteosrv"
+#change Alias to "Alias=meteosrv.service"
 #delete "EnvironmentFile=-/etc/default/ssh"
 
 vim /etc/meteosrv.cfg
