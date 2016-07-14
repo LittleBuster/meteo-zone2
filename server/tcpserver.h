@@ -29,11 +29,9 @@
 struct tcp_server {
     /* Socket id */
     SOCKET s;
-    pthread_mutex_t mutex;
 
     /* User data */
-    void *new_session_data;
-    void *accept_error_data;
+    void *data;
 
     /**
      * Client accept error signal
@@ -44,7 +42,7 @@ struct tcp_server {
     /*
      * New client session
      */
-    void (*new_session)(struct tcp_client *s_client, void *data, pthread_mutex_t *mutex, void *user_data);
+    void (*new_session)(struct tcp_client *s_client, void *data);
 };
 
 
@@ -67,7 +65,7 @@ void tcp_server_set_accepterr_cb(struct tcp_server *restrict sock, void (*accept
  * @new_session: new session function pointer
  * @data: user data
  */
-void tcp_server_set_newsession_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client*, void*, pthread_mutex_t*, void*), void *data);
+void tcp_server_set_newsession_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client*, void*), void *data);
 
 /**
  * Bind ip address and starting socket server

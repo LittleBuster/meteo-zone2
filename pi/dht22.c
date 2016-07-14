@@ -12,6 +12,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,12 +34,10 @@
 #define DHT_PULSES 41
 
 
-bool dht22_init(struct dht22 *dht, uint8_t pin)
+void dht22_init(struct dht22 *dht, uint8_t pin)
 {
     dht->pin = pin;
     memset(dht->data, 0x00, sizeof(uint8_t)*5);
-
-    return gpio_init();
 }
 
 bool dht22_read_data(struct dht22 *dht, float *temp, float *hum, struct error *err)

@@ -16,7 +16,6 @@
 struct sock_data {
     struct tcp_client *client;
     struct tcp_server *server;
-    void *user_data;
 };
 
 
@@ -24,7 +23,7 @@ static void *new_client(void *data)
 {
     struct sock_data *sdata = (struct sock_data *)data;
 
-    sdata->server->new_session(sdata->client, sdata->server->new_session_data, &sdata->server->mutex, sdata->user_data);
+    sdata->server->new_session(sdata->client, sdata->server->data);
 
     tcp_client_close(sdata->client);
     free(sdata->client);
@@ -37,19 +36,18 @@ void tcp_server_init(struct tcp_server *restrict sock)
 {
     sock->accept_error = NULL;
     sock->new_session = NULL;
-    pthread_mutex_init(&sock->mutex, NULL);
 }
 
 void tcp_server_set_accepterr_cb(struct tcp_server *restrict sock, void (*accept_error)(void*), void *data)
 {
     sock->accept_error = accept_error;
-    sock->accept_error_data = data;
+    sock->data = data;
 }
 
-void tcp_server_set_newsession_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client*, void*, pthread_mutex_t*, void*), void *data)
+void tcp_server_set_newsession_cb(struct tcp_server *restrict sock, void (*new_session)(struct tcp_client*, void*), void *data)
 {
     sock->new_session = new_session;
-    sock->new_session_data = data;
+    sock->data = data;
 }
 
 bool tcp_server_bind(struct tcp_server *sock, const unsigned short port, const unsigned max_clients)
@@ -79,7 +77,7 @@ bool tcp_server_bind(struct tcp_server *sock, const unsigned short port, const u
         s_client = accept(sock->s, NULL, NULL);
         if (s_client == SOCKET_ERROR) {
             if (sock->accept_error != NULL)
-                sock->accept_error(sock->accept_error_data);
+                sock->accept_error(sock->data);
             continue;
         }
 
@@ -91,12 +89,10 @@ bool tcp_server_bind(struct tcp_server *sock, const unsigned short port, const u
         struct sock_data *sdata = (struct sock_data *)malloc(sizeof(sdata));
         sdata->client = client;
         sdata->server = sock;
-        sdata->user_data = sock->new_session_data;
 
         client->s = s_client;
         pthread_create(&cl_th, NULL, &new_client, (void *)sdata);
         pthread_detach(cl_th);        
-    }
-    pthread_mutex_destroy(&sock->mutex);
+    }    
     return true;
 }

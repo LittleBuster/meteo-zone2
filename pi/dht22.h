@@ -31,11 +31,8 @@ struct dht22 {
  * Initialization gpio and dht structure
  * @dht: dht structure pointer
  * @pin: reading pin
- *
- * returns true: if initialization complete
- * returns false: if initialization fail
  */
-bool dht22_init(struct dht22 *dht, uint8_t pin);
+void dht22_init(struct dht22 *dht, uint8_t pin);
 
 /**
 * Reading temperature and humidity
