@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -I. -std=gnu99 -pedantic -march=native -O2 -Wno-pointer-arith
+CFLAGS=-Wall -I. -std=gnu99 -pedantic -march=native -O2 -Wno-pointer-arith -Wno-address
 LDFLAGS=-ljansson
 
 

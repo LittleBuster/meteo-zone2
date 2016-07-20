@@ -28,9 +28,8 @@ enum io_errs {
 /**
  * IO library initialization
  *
- * returns 0 if succeful
- * returns ERR_DEVMEM if fail init (need root)
- * returns ERR_MMAP if fail reading mmap
+ * returns true: if succeful map init
+ * returns false: if fail init
  */
 bool gpio_init(void);
 

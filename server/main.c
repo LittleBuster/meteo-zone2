@@ -8,6 +8,7 @@
  * as published by the Free Software Foundation; either version 3
  * of the Licence, or (at your option) any later version.
  */
+
 #include "log.h"
 #include "configs.h"
 #include "meteoserver.h"
@@ -21,7 +22,7 @@ int main()
 		puts("Fail setting log path. Path is to long.");
 		return -1;
 	}
-	if (!configs_load("/etc/meteosrv.cfg")) {
+	if (!configs_load("/etc/meteosrv.conf")) {
 		log_local("Fail reading configs file.", LOG_ERROR);
 		return -1;
 	}

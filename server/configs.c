@@ -103,7 +103,8 @@ static bool configs_read_string(FILE *file, char *out, size_t sz)
     char data[255];
 
     while (!feof(file)) {
-        fgets(data, 255, file);
+        if (fgets(data, 255, file) == NULL)
+            return false;
         if (parse_string(data, out, sz))
             return true;
     }
@@ -118,7 +119,8 @@ static bool configs_read_unsigned(FILE *file, unsigned *out)
     char data[50];
 
     while (!feof(file)) {
-        fgets(data, 50, file);
+        if (fgets(data, 50, file) == NULL)
+            return false;
         if (parse_unsigned(data, out))
             return true;
     }
@@ -136,6 +138,8 @@ bool configs_load(const char *filename)
     FILE *file;
 
     file = fopen(filename, "r");
+    if (file == NULL)
+        return false;
 
     if (!configs_read_unsigned(file, &cfg.sc.port)) {
         fclose(file);
