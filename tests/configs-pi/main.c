@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 void exit_fail()
 {
 	puts("-----------------------------");
@@ -15,7 +16,7 @@ int main(void)
 	puts("Starting \"Configs\" test...");
 	puts("-------------------------");
 
-	if (!configs_load("../../pi/meteo.cfg")) {
+	if (!configs_load("../../pi/meteo.conf")) {
 		puts("[FAIL] Error reading configs file.");
 		exit_fail();	
 	}
@@ -30,7 +31,7 @@ int main(void)
 		exit_fail();
 	}
 	puts("[OK] Reading interval configs.");
-
+	
 	if (strcmp(sc->ip, "127.0.0.1")) {
 		puts("[FAIL] Fail reading IP address.");
 		exit_fail();

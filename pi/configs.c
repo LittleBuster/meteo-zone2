@@ -47,17 +47,18 @@ static int pos(const char *str, const char symb)
     return -1;
 }
 
-static bool parse_string(const char *str, char *out)
+static bool parse_string(const char *str, char *out, size_t sz)
 {
     bool is_num = false;
     bool found = false;
     int p;
+    size_t len = 0;
 
     p = pos(str, '\"');
     if (p == -2)
         return false;
     if (p == -1) {
-        p = pos(str, ':');
+        p = pos(str, '=');
         if (p == -1)
             return false;
         is_num = true;
@@ -71,11 +72,14 @@ static bool parse_string(const char *str, char *out)
         }
         if (*str == '\"')
             break;
+        if (len > sz)
+            return false;
 
         found = true;
         *out = *str;
         out++;
         str++;
+        len++;
     }
     if (is_num)
         *out = '\0';
@@ -88,7 +92,7 @@ static bool parse_unsigned(const char *str, unsigned *out)
 {
     char outs[50];
 
-    if (!parse_string(str, outs))
+    if (!parse_string(str, outs, 50))
         return false;
 
     sscanf(outs, "%u", out); 
@@ -98,14 +102,13 @@ static bool parse_unsigned(const char *str, unsigned *out)
 static bool configs_read_string(FILE *file, char *out, size_t sz)
 {
     bool is_ok = false;
-    char data[sz];
+    char data[255];
 
     while (!feof(file)) {
-        fgets(data, sz, file);
-        if (parse_string(data, out))
+        fgets(data, 255, file);
+        if (parse_string(data, out, sz))
             return true;
     }
-
     if (!is_ok)
         return false;
     return true;
@@ -141,7 +144,7 @@ bool configs_load(const char *filename)
         return false;
     }
 
-    if (!configs_read_string(file, cfg.sc.ip, 20)) {
+    if (!configs_read_string(file, cfg.sc.ip, 15)) {
         fclose(file);
         return false;
     }
