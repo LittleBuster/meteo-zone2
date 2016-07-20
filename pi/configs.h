@@ -19,7 +19,7 @@ struct checker_cfg {
 };
 
 struct server_cfg {
-	char ip[16];
+	char ip[25];
 	unsigned port;
 };
 
