@@ -4,7 +4,7 @@
  * Written by Sergey Denisov aka LittleBuster (DenisovS21@gmail.com)
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public Licence
+ * modify it under the terms of the GNU General Public Licence
  * as published by the Free Software Foundation; either version 3
  * of the Licence, or (at your option) any later version.
  */
@@ -23,80 +23,147 @@ static struct {
 } cfg;
 
 
-static bool get_string_value(json_t *root, json_t *object, const char *value, char *out_str, unsigned size)
+/*
+ * Local funcs
+ */
+static int pos(const char *str, const char symb)
 {
-	json_t *jsobj;
+    int p = 0;
 
-	jsobj = json_object_get(object, value);
-    if (jsobj == NULL) {
-        json_decref(jsobj);
-        json_decref(object);
-        json_decref(root);
-        return false;
+    while (*str) {
+        /*
+         * Line is comment
+         */
+        if (*str == '#')
+            return -2;
+
+        if (*str == symb)
+            return p;
+        str++;
+        p++;
     }
-    strncpy(out_str, json_string_value(jsobj), size);
-    json_decref(jsobj);
+    return -1;
+}
+
+static bool parse_string(const char *str, char *out, size_t sz)
+{
+    bool is_num = false;
+    bool found = false;
+    int p;
+    size_t len = 0;
+
+    p = pos(str, '\"');
+    if (p == -2)
+        return false;
+    if (p == -1) {
+        p = pos(str, '=');
+        if (p == -1)
+            return false;
+        is_num = true;
+    }
+    str += p + 1;
+
+    while (*str) {
+        if (*str == ' ' && !found) {
+            str++;
+            continue;
+        }
+        if (*str == '\"')
+            break;
+        if (len > sz)
+            return false;
+
+        found = true;
+        *out = *str;
+        out++;
+        str++;
+        len++;
+    }
+    if (is_num)
+        *out = '\0';
+    else
+        *out = '\0';
     return true;
 }
 
-static bool get_integer_value(json_t *root, json_t *object, const char *value, int *out_val)
+static bool parse_unsigned(const char *str, unsigned *out)
 {
-	json_t *jsobj;
+    char outs[50];
 
-	jsobj = json_object_get(object, value);
-    if (jsobj == NULL) {
-        json_decref(jsobj);
-        json_decref(object);
-        json_decref(root);
+    if (!parse_string(str, outs, 50))
         return false;
-    }
-    *out_val = json_integer_value(jsobj);
-    json_decref(jsobj);
+
+    sscanf(outs, "%u", out); 
     return true;
 }
 
+static bool configs_read_string(FILE *file, char *out, size_t sz)
+{
+    bool is_ok = false;
+    char data[255];
+
+    while (!feof(file)) {
+        fgets(data, 255, file);
+        if (parse_string(data, out, sz))
+            return true;
+    }
+    if (!is_ok)
+        return false;
+    return true;
+}
+
+static bool configs_read_unsigned(FILE *file, unsigned *out)
+{
+    bool is_ok = false;
+    char data[50];
+
+    while (!feof(file)) {
+        fgets(data, 50, file);
+        if (parse_unsigned(data, out))
+            return true;
+    }
+
+    if (!is_ok)
+        return false;
+    return true;
+}
+
+/*
+ * Loading configs from file
+ */
 bool configs_load(const char *filename)
 {
-    json_t *root;
-    json_t *jdata;
+    FILE *file;
 
-    root = json_load_file(filename, 0, NULL);
-    if (root == NULL) 
-        return false;
+    file = fopen(filename, "r");
 
-    /*
-     * Server cfg
-     */
-    jdata = json_object_get(root, "Server");
-    if (jdata == NULL) {
-        json_decref(root);
+    if (!configs_read_unsigned(file, &cfg.sc.port)) {
+        fclose(file);
         return false;
     }
-    if (!get_integer_value(root, jdata, "Port", (int *)&cfg.sc.port))
-    	return false;
-    if (!get_integer_value(root, jdata, "MaxUsers", (int *)&cfg.sc.max_users))
-    	return false;
-    json_decref(jdata);
-
-    /*
-     * Database cfg
-     */
-    jdata = json_object_get(root, "Database");
-    if (jdata == NULL) {
-        json_decref(root);
+    if (!configs_read_unsigned(file, &cfg.sc.max_users)) {
+        fclose(file);
         return false;
     }
-    if (!get_string_value(root, jdata, "Ip", cfg.dbc.ip, 15))
-    	return false;
-    if (!get_string_value(root, jdata, "User", cfg.dbc.user, 19))
-    	return false;
-    if (!get_string_value(root, jdata, "Passwd", cfg.dbc.passwd, 19))
-    	return false;
-    if (!get_string_value(root, jdata, "Base", cfg.dbc.base, 19))
-    	return false;
-    json_decref(jdata);
 
-    json_decref(root);
+    if (!configs_read_string(file, cfg.dbc.ip, 15)) {
+        fclose(file);
+        return false;
+    }
+    if (!configs_read_string(file, cfg.dbc.user, 19)) {
+        fclose(file);
+        return false;
+    }
+    if (!configs_read_string(file, cfg.dbc.passwd, 19)) {
+        fclose(file);
+        return false;
+    }
+    if (!configs_read_string(file, cfg.dbc.base, 19)) {
+        fclose(file);
+        return false;
+    }
+
+    fclose(file);
     return true;
 }
 
