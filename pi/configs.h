@@ -13,6 +13,7 @@
 #define __CONFIGS_H__
 
 #include <stdbool.h>
+#include <stdint.h>
 
 
 enum error_codes {

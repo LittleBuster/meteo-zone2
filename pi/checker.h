@@ -30,10 +30,8 @@ struct login_data {
 };
 
 struct meteo_data {	
-	float temp_in;
-	float temp_out;
-	float hum_in;
-	float hum_out;
+	float temp;
+	float hum;
 };
 
 

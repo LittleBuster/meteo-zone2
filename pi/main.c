@@ -12,6 +12,8 @@
 #include "log.h"
 #include "configs.h"
 #include "checker.h"
+#include <string.h>
+#include <stdint.h>
 
 
 int main(void)

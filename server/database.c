@@ -30,12 +30,12 @@ bool database_check_user(struct database *db, unsigned id, const char *key)
 	return true;
 }
 
-bool database_add_meteo(struct database *db, unsigned id, float temp_in, float hum_in, float temp_out, float hum_out)
+bool database_add_meteo(struct database *db, unsigned id, float temp, float hum)
 {
 	int ret_val;
 	char query[512];
 
-	strcpy(query, "INSERT INTO meteo(id_usr, in_temp, in_hum, out_temp, out_hum, time) VALUES (\"");
+	strcpy(query, "INSERT INTO meteo(id_usr, temp, hum, time) VALUES (\"");
 
 	ret_val = mysql_query(db->base, query);
 	if (ret_val != 0)

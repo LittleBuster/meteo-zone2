@@ -49,15 +49,13 @@ bool database_check_user(struct database *db, unsigned id, const char *key);
  * Adding new meteo data in base
  * @db: database pointer
  * @id: id of device
- * @temp_in: inside temperature
- * @hum_in: inside humidity
- * @temp_out: street temperature
- * @hum_out: street humidity
+ * @temp: inside temperature
+ * @hum: inside humidity
  *
  * returns false: if fail adding to base
  * returns true: if adding ok
  */
-bool database_add_meteo(struct database *db, unsigned id, float temp_in, float hum_in, float temp_out, float hum_out);
+bool database_add_meteo(struct database *db, unsigned id, float temp, float hum);
 
 /*
  * Closing connection

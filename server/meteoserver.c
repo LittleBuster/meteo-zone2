@@ -55,7 +55,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 		char msg[255];
 		char id[9];
 
-		sprintf(msg, "%d", (int)ldata.id);
+		sprintf(msg, "%u", ldata.id);
 		strcpy(msg, "Fail client authentication. ID:");
 		strcat(msg, id);
 
@@ -98,9 +98,8 @@ static void new_session(struct tcp_client *s_client, void *data)
 	printf("%s\n", "OK.");
 
 	puts("================================");
-	printf("ID: %d\n", (int)ldata.id);
-	printf("Inside: Temp: %.2f Hum: %.2f\n", mdata.temp_in, mdata.hum_in);
-	printf("Outside: Temp: %.2f Hum: %.2f\n", mdata.temp_out, mdata.hum_out);
+	printf("ID: %u\n", ldata.id);
+	printf("Temp: %.2f Hum: %.2f\n", mdata.temp, mdata.hum);
 	puts("================================");
 	pthread_mutex_unlock(&mserver.mutex);
 

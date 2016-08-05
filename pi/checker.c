@@ -29,6 +29,7 @@ static struct {
 
 static void checker_handle()
 {
+	float temp_out, hum_out;
 	struct error err;	
 	struct login_data ldata;
 	struct meteo_data mdata;
@@ -40,21 +41,21 @@ static void checker_handle()
 		bool s_in = false;
 		bool s_out = false;
 
-		s_in = dht22_read_data(&checker.dht_in, &mdata.temp_in, &mdata.hum_in, &err);
+		s_in = dht22_read_data(&checker.dht_in, &mdata.temp, &mdata.hum, &err);
 		if (!s_in) {
 			log_local("Fail reading data from inside sensor.", LOG_WARNING);
 			log_local(err.message, LOG_ERROR);
 		}
 
-		s_out = dht22_read_data(&checker.dht_out, &mdata.temp_out, &mdata.hum_out, &err);
+		s_out = dht22_read_data(&checker.dht_out, &temp_out, &hum_out, &err);
 		if (!s_out) {
 			log_local("Fail reading data from outside sensor.", LOG_WARNING);
 			log_local(err.message, LOG_ERROR);
 		}
 
 		if (s_in && s_out) {
-			printf("Inside sensor: Temp: %.2f Hum: %.2f\n", mdata.temp_in, mdata.hum_in);
-			printf("Outside sensor: Temp: %.2f Hum: %.2f\n", mdata.temp_out, mdata.hum_out);
+			printf("Inside sensor: Temp: %.2f Hum: %.2f\n", mdata.temp, mdata.hum);
+			printf("Outside sensor: Temp: %.2f Hum: %.2f\n", temp_out, hum_out);
 			break;
 		}
 		else
