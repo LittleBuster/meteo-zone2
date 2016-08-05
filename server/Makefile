@@ -1,6 +1,5 @@
 CC=gcc
 CFLAGS=-Wall -I. -std=gnu99 -pedantic -march=native -O2 -Wno-pointer-arith
-LDFLAGS=-ljansson
 LDFLAGS2=-lpthread
 LDFLAGS3=-lmysqlclient
 
@@ -39,6 +38,7 @@ install:
 	-mkdir /usr/share/meteosrv
 	-cp meteosrv /usr/share/meteosrv/
 	-cp meteosrv.cfg /etc/
+	-chmod +x /usr/share/meteosrv/meteosrv
 
 remove:
 	rm -rf /usr/share/meteosrv

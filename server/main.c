@@ -16,14 +16,50 @@
 #include <string.h>
 
 
-int main()
+int main(void)
 {
+	uint8_t ret_val;
+
 	if (!log_set_path("/var/log/meteosrv.log")) {
 		puts("Fail setting log path. Path is to long.");
 		return -1;
 	}
-	if (!configs_load("/etc/meteosrv.conf")) {
-		log_local("Fail reading configs file.", LOG_ERROR);
+	ret_val = configs_load("/etc/meteosrv.conf");
+	if (ret_val != CFG_OK) {
+		char msg[512];
+		
+		strcpy(msg, "Fail loading configs file: ");
+		switch(ret_val) {
+			case CFG_FILE_NOT_FOUND: {
+				strcat(msg, "file not found.");
+				break;
+			}
+			case CFG_SC_PORT_ERR: {
+				strcat(msg, "server port reading error.");
+				break;
+			}
+			case CFG_SC_MAX_ERR: {
+				strcat(msg, "server max users reading error.");
+				break;
+			}
+			case CFG_DB_IP_ERR: {
+				strcat(msg, "database IP reading error.");
+				break;
+			}
+			case CFG_DB_USER_ERR: {
+				strcat(msg, "database user reading error.");
+				break;
+			}
+			case CFG_DB_PASSWD_ERR: {
+				strcat(msg, "database passwd reading error.");
+				break;
+			}
+			case CFG_DB_BASE_ERR: {
+				strcat(msg, "database base reading error.");
+				break;
+			}
+		}
+		log_local(msg, LOG_ERROR);
 		return -1;
 	}
 	if (!meteo_server_start()) {

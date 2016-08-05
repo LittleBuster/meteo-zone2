@@ -16,9 +16,50 @@
 
 int main(void)
 {
+	uint8_t ret_val;
+
 	log_set_path("/var/log/meteo.log");
-	if (!configs_load("/etc/meteo.cfg")) {
-		log_local("Fail reading configs file.", LOG_ERROR);
+
+	ret_val = configs_load("/etc/meteo.cfg");
+	if (ret_val != CFG_OK) {
+		char msg[512];
+
+		strcpy(msg, "Fail loading configs file: ");
+		switch(ret_val) {
+			case CFG_FILE_NOT_FOUND: {
+				strcat(msg, "file not found.");
+				break;
+			}
+			case CFG_CC_INTERVAL_ERR: {
+				strcat(msg, "checker interval reading error.");
+				break;
+			}
+			case CFG_SC_IP_ERR: {
+				strcat(msg, "server ip reading error.");
+				break;
+			}
+			case CFG_SC_PORT_ERR: {
+				strcat(msg, "server port reading error.");
+				break;
+			}
+			case CFG_DC_ID_ERR: {
+				strcat(msg, "device ID reading error.");
+				break;
+			}
+			case CFG_DC_KEY_ERR: {
+				strcat(msg, "device key reading error.");
+				break;
+			}
+			case CFG_SS_IN_ERR: {
+				strcat(msg, "sensor in reading error.");
+				break;
+			}
+			case CFG_SS_OUT_ERR: {
+				strcat(msg, "sensor out reading error.");
+				break;
+			}
+		}
+		log_local(msg, LOG_ERROR);
 		return -1;
 	}
 	if (!checker_start())

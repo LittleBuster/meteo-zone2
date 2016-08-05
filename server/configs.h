@@ -13,12 +13,29 @@
 #define __CONFIGS_H__
 
 #include <stdbool.h>
+#include <stdint.h>
 
 
-struct server_cfg {
-	unsigned port;
-	unsigned max_users;
+enum error_codes {
+	CFG_FILE_NOT_FOUND,
+	CFG_SC_PORT_ERR,
+	CFG_SC_MAX_ERR,
+	CFG_DB_IP_ERR,
+	CFG_DB_USER_ERR,
+	CFG_DB_PASSWD_ERR,
+	CFG_DB_BASE_ERR,
+	CFG_OK
 };
+
+/**
+ * Loading configs from file to RAM
+ * @filename: name of json configs file
+ *
+ * returns error codes: if fail loading
+ * returns CFG_OK: if succeful loading
+ */
+uint8_t configs_load(const char *filename);
+
 
 struct database_cfg {
 	char ip[16];
@@ -27,25 +44,21 @@ struct database_cfg {
 	char base[20];
 };
 
-
 /*
  * Database server configs
  */
-struct database_cfg *configs_get_database();
+struct database_cfg *configs_get_database(void);
+
+
+struct server_cfg {
+	unsigned port;
+	unsigned max_users;
+};
 
 /*
- * Server configs
+ * Get server configs
  */
-struct server_cfg *configs_get_server();
-
-/**
- * Loading configs from file to RAM
- * @filename: name of json configs file
- *
- * returns false: if fail loading
- * returns true: if succeful loading
- */
-bool configs_load(const char *filename);
+struct server_cfg *configs_get_server(void);
 
 
 #endif

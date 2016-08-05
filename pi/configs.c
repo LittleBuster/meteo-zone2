@@ -17,6 +17,11 @@
 #include <jansson.h>
 
 
+enum {
+    POS_COMMENT = -2,
+    POS_NOT_FOUND = -1
+};
+
 static struct {
     struct checker_cfg cc;
     struct server_cfg sc;
@@ -37,29 +42,29 @@ static int pos(const char *str, const char symb)
          * Line is comment
          */
         if (*str == '#')
-            return -2;
+            return POS_COMMENT;
 
         if (*str == symb)
             return p;
         str++;
         p++;
     }
-    return -1;
+    return POS_NOT_FOUND;
 }
 
 static bool parse_string(const char *str, char *out, size_t sz)
 {
+    int p;
     bool is_num = false;
     bool found = false;
-    int p;
     size_t len = 0;
 
     p = pos(str, '\"');
-    if (p == -2)
+    if (p == POS_COMMENT)
         return false;
-    if (p == -1) {
+    if (p == POS_NOT_FOUND) {
         p = pos(str, '=');
-        if (p == -1)
+        if (p == POS_NOT_FOUND)
             return false;
         is_num = true;
     }
@@ -135,48 +140,44 @@ static bool configs_read_unsigned(FILE *file, unsigned *out)
 /*
  * Loading configs from file
  */
-bool configs_load(const char *filename)
+uint8_t configs_load(const char *filename)
 {
     FILE *file;
 
     file = fopen(filename, "r");
     if (file == NULL)
-        return false;
+        return CFG_FILE_NOT_FOUND;
 
     if (!configs_read_unsigned(file, &cfg.cc.interval)) {
         fclose(file);
-        return false;
+        return CFG_CC_INTERVAL_ERR;
     }
-
     if (!configs_read_string(file, cfg.sc.ip, 15)) {
         fclose(file);
-        return false;
+        return CFG_SC_IP_ERR;
     }
     if (!configs_read_unsigned(file, &cfg.sc.port)) {
         fclose(file);
-        return false;
+        return CFG_SC_PORT_ERR;
     }
-
     if (!configs_read_unsigned(file, &cfg.dc.id)) {
         fclose(file);
-        return false;
+        return CFG_DC_ID_ERR;
     }
     if (!configs_read_string(file, cfg.dc.key, 64)) {
         fclose(file);
-        return false;
+        return CFG_DC_KEY_ERR;
     }
-
     if (!configs_read_unsigned(file, &cfg.ss.dht_in)) {
         fclose(file);
-        return false;
+        return CFG_SS_IN_ERR;
     }
     if (!configs_read_unsigned(file, &cfg.ss.dht_out)) {
         fclose(file);
-        return false;
-    }    
-
+        return CFG_SS_OUT_ERR;
+    }
     fclose(file);
-    return true;
+    return CFG_OK;
 }
 
 struct checker_cfg *configs_get_checker()

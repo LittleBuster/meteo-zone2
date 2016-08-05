@@ -14,8 +14,12 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
-#include <jansson.h>
 
+
+enum {
+	POS_COMMENT = -2,
+	POS_NOT_FOUND = -1
+};
 
 static struct {
     struct server_cfg sc;
@@ -35,29 +39,29 @@ static int pos(const char *str, const char symb)
          * Line is comment
          */
         if (*str == '#')
-            return -2;
+            return POS_COMMENT;
 
         if (*str == symb)
             return p;
         str++;
         p++;
     }
-    return -1;
+    return POS_NOT_FOUND;
 }
 
 static bool parse_string(const char *str, char *out, size_t sz)
 {
+	int p;
     bool is_num = false;
     bool found = false;
-    int p;
     size_t len = 0;
 
     p = pos(str, '\"');
-    if (p == -2)
+    if (p == POS_COMMENT)
         return false;
-    if (p == -1) {
+    if (p == POS_NOT_FOUND) {
         p = pos(str, '=');
-        if (p == -1)
+        if (p == POS_NOT_FOUND)
             return false;
         is_num = true;
     }
@@ -97,7 +101,7 @@ static bool parse_unsigned(const char *str, unsigned *out)
     return true;
 }
 
-static bool configs_read_string(FILE *file, char *out, size_t sz)
+static bool configs_read_string(FILE *restrict file, char *out, size_t sz)
 {
     bool is_ok = false;
     char data[255];
@@ -113,7 +117,7 @@ static bool configs_read_string(FILE *file, char *out, size_t sz)
     return true;
 }
 
-static bool configs_read_unsigned(FILE *file, unsigned *out)
+static bool configs_read_unsigned(FILE *restrict file, unsigned *out)
 {
     bool is_ok = false;
     char data[50];
@@ -133,50 +137,48 @@ static bool configs_read_unsigned(FILE *file, unsigned *out)
 /*
  * Loading configs from file
  */
-bool configs_load(const char *filename)
+uint8_t configs_load(const char *filename)
 {
     FILE *file;
 
     file = fopen(filename, "r");
     if (file == NULL)
-        return false;
+        return CFG_FILE_NOT_FOUND;
 
     if (!configs_read_unsigned(file, &cfg.sc.port)) {
         fclose(file);
-        return false;
+        return CFG_SC_PORT_ERR;
     }
     if (!configs_read_unsigned(file, &cfg.sc.max_users)) {
         fclose(file);
-        return false;
+        return CFG_SC_MAX_ERR;
     }
-
     if (!configs_read_string(file, cfg.dbc.ip, 15)) {
         fclose(file);
-        return false;
+        return CFG_DB_IP_ERR;
     }
     if (!configs_read_string(file, cfg.dbc.user, 19)) {
         fclose(file);
-        return false;
+        return CFG_DB_USER_ERR;
     }
     if (!configs_read_string(file, cfg.dbc.passwd, 19)) {
         fclose(file);
-        return false;
+        return CFG_DB_PASSWD_ERR;
     }
     if (!configs_read_string(file, cfg.dbc.base, 19)) {
         fclose(file);
-        return false;
+        return CFG_DB_BASE_ERR;
     }
-
     fclose(file);
-    return true;
+    return CFG_OK;
 }
 
-struct server_cfg *configs_get_server()
+struct server_cfg *configs_get_server(void)
 {
     return &cfg.sc;
 }
 
-struct database_cfg *configs_get_database()
+struct database_cfg *configs_get_database(void)
 {
     return &cfg.dbc;
 }

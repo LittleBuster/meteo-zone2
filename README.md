@@ -3,7 +3,7 @@ Novosibirsk meteo project
 <h2>Meteo server</h2><br>
 <b>Depedencies (Debian):</b>
 ````
-apt install git gcc make libjansson4 libjansson-dev
+apt install git gcc make
 ````
 <b>Installation:</b>
 ````
@@ -12,8 +12,6 @@ cd meteo-zone2
 cd server
 make
 make install
-cd /usr/share/meteosrv/
-chmod +x meteosrv
 cd /etc/systemd/system/
 cp sshd.service meteosrv.service
 vim meteosrv.service
