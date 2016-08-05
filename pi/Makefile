@@ -1,12 +1,11 @@
 CC=gcc
 CFLAGS=-Wall -I. -std=gnu99 -pedantic -march=native -O2 -Wno-pointer-arith -Wno-address
-LDFLAGS=-ljansson
 
 
 all: meteo
 
 meteo: main.o dht22.o gpio.o tcpclient.o configs.o utils.o log.o checker.o
-	$(CC) main.o dht22.o gpio.o tcpclient.o configs.o utils.o log.o checker.o -o meteo $(CFLAGS) $(LDFLAGS)
+	$(CC) main.o dht22.o gpio.o tcpclient.o configs.o utils.o log.o checker.o -o meteo $(CFLAGS)
 
 main.o: main.c
 	$(CC) -c main.c $(CFLAGS)

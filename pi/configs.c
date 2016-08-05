@@ -14,7 +14,6 @@
 #include <sys/stat.h>
 #include <stdlib.h>
 #include <string.h>
-#include <jansson.h>
 
 
 enum {
@@ -180,22 +179,22 @@ uint8_t configs_load(const char *filename)
     return CFG_OK;
 }
 
-struct checker_cfg *configs_get_checker()
+struct checker_cfg *configs_get_checker(void)
 {
     return &cfg.cc;
 }
 
-struct server_cfg *configs_get_server()
+struct server_cfg *configs_get_server(void)
 {
     return &cfg.sc;
 }
 
-struct device_cfg *configs_get_device()
+struct device_cfg *configs_get_device(void)
 {
     return &cfg.dc;
 }
 
-struct sensors_cfg *configs_get_sensors()
+struct sensors_cfg *configs_get_sensors(void)
 {
     return &cfg.ss;
 }

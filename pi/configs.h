@@ -45,7 +45,7 @@ struct checker_cfg {
 /*
  * Checker timer configs
  */
-struct checker_cfg *configs_get_checker();
+struct checker_cfg *configs_get_checker(void);
 
 
 struct server_cfg {
@@ -56,7 +56,7 @@ struct server_cfg {
 /*
  * Remote tcp server configs
  */
-struct server_cfg *configs_get_server();
+struct server_cfg *configs_get_server(void);
 
 
 struct device_cfg {
@@ -67,7 +67,7 @@ struct device_cfg {
 /*
  * Device configs
  */
-struct device_cfg *configs_get_device();
+struct device_cfg *configs_get_device(void);
 
 
 struct sensors_cfg {
@@ -78,7 +78,7 @@ struct sensors_cfg {
 /*
  * Sensors configs
  */
-struct sensors_cfg *configs_get_sensors();
+struct sensors_cfg *configs_get_sensors(void);
 
 
 #endif
