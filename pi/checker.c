@@ -46,13 +46,11 @@ static void checker_handle()
 			log_local("Fail reading data from inside sensor.", LOG_WARNING);
 			log_local(err.message, LOG_ERROR);
 		}
-
 		s_out = dht22_read_data(&checker.dht_out, &temp_out, &hum_out, &err);
 		if (!s_out) {
 			log_local("Fail reading data from outside sensor.", LOG_WARNING);
 			log_local(err.message, LOG_ERROR);
 		}
-
 		if (s_in && s_out) {
 			printf("Inside sensor: Temp: %.2f Hum: %.2f\n", mdata.temp, mdata.hum);
 			printf("Outside sensor: Temp: %.2f Hum: %.2f\n", temp_out, hum_out);
@@ -120,7 +118,7 @@ bool checker_start(void)
 	struct checker_cfg *cc = configs_get_checker();
 	struct sensors_cfg *sc = configs_get_sensors();
 
-	if (!gpio_init) {
+	if (!gpio_init()) {
 		log_local("Fail init GPIOs.", LOG_ERROR);
 		return false;
 	}
