@@ -22,7 +22,7 @@ int main(void)
 
 	log_set_path("/var/log/meteo.log");
 
-	ret_val = configs_load("/etc/meteo.cfg");
+	ret_val = configs_load("/etc/meteo.conf");
 	if (ret_val != CFG_OK) {
 		char msg[512];
 
