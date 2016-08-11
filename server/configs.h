@@ -39,9 +39,9 @@ uint8_t configs_load(const char *filename);
 
 struct database_cfg {
 	char ip[16];
-	char user[20];
-	char passwd[20];
-	char base[20];
+	char user[255];
+	char passwd[255];
+	char base[255];
 };
 
 /*

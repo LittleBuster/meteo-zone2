@@ -13,13 +13,36 @@
 #include "tcpserver.h"
 #include "log.h"
 #include "configs.h"
+#include "database.h"
 #include <stdio.h>
 #include <string.h>
 
 
+enum {
+	KEY_OK,
+	KEY_FAIL,
+	DATA_OK,
+	DATA_FAIL
+};
+
+struct server_answ {
+	unsigned code;
+};
+
+struct login_data {
+	unsigned id;
+	char key[65];
+};
+
+struct meteo_data {	
+	float temp;
+	float hum;
+};
+
 static struct {
 	pthread_mutex_t mutex;
 	struct tcp_server server;
+	struct database db;
 } mserver;
 
 
@@ -41,14 +64,37 @@ static void new_session(struct tcp_client *s_client, void *data)
 		pthread_mutex_unlock(&mserver.mutex);
 		return;
 	}
+	/*
+	 * Checking ID && KEY
+	 */
+	struct database_cfg *db = configs_get_database();
 
-	//Checking ID && KEY
+	if (!database_connect(&mserver.db, db->ip, db->user, db->passwd, db->base)) {
+		pthread_mutex_lock(&mserver.mutex);
+		log_local("Fail connecting to database.", LOG_ERROR);
+		pthread_mutex_unlock(&mserver.mutex);
+		return;
+	}
+	if (!database_check_user(&mserver.db, ldata.id, ldata.key)) {
+		char msg[255];
+		char num[20];
+
+		sprintf(num, "%u", ldata.id);
+		strcpy(msg, "Fail user authentication. ID: ");
+		strcat(msg, num);
+		pthread_mutex_lock(&mserver.mutex);
+		log_local(msg, LOG_ERROR);
+		pthread_mutex_unlock(&mserver.mutex);
+		answ.code = KEY_FAIL;
+	}
+	answ.code = KEY_OK;
 
 	if (!tcp_client_send(s_client, (const void *)&answ, sizeof(answ))) {
 		pthread_mutex_lock(&mserver.mutex);
 		printf("%s\n", "FAIL!");
 		log_local("Fail sending key checking answare.", LOG_ERROR);
 		pthread_mutex_unlock(&mserver.mutex);
+		database_close(&mserver.db);
 		return;
 	}
 	if (answ.code != KEY_OK) {
@@ -63,6 +109,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 		printf("%s\n", "FAIL!");
 		log_local(msg, LOG_ERROR);
 		pthread_mutex_unlock(&mserver.mutex);
+		database_close(&mserver.db);
 		return;
 	}
 	pthread_mutex_lock(&mserver.mutex);
@@ -76,6 +123,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 		log_local("Fail receiving meteo answare.", LOG_ERROR);
 		pthread_mutex_unlock(&mserver.mutex);
 		answ.code = DATA_FAIL;
+		database_close(&mserver.db);
 		return;
 	}
 	answ.code = DATA_OK;
@@ -85,6 +133,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 		printf("%s\n", "FAIL!");
 		log_local("Fail sending meteo answare.", LOG_ERROR);
 		pthread_mutex_unlock(&mserver.mutex);
+		database_close(&mserver.db);
 		return;
 	}
 	if (answ.code != DATA_OK) {
@@ -92,6 +141,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 		printf("%s\n", "FAIL!");
 		log_local("Fail meteo data.", LOG_ERROR);
 		pthread_mutex_unlock(&mserver.mutex);
+		database_close(&mserver.db);
 		return;
 	}
 	pthread_mutex_lock(&mserver.mutex);
@@ -103,7 +153,12 @@ static void new_session(struct tcp_client *s_client, void *data)
 	puts("================================");
 	pthread_mutex_unlock(&mserver.mutex);
 
-	//Add to database
+	if (!database_add_meteo(&mserver.db, ldata.id, mdata.temp, mdata.hum)) {
+		pthread_mutex_lock(&mserver.mutex);
+		log_local("Fail adding meteo data to database.", LOG_ERROR);
+		pthread_mutex_unlock(&mserver.mutex);
+	}
+	database_close(&mserver.db);
 }
 
 bool meteo_server_start()

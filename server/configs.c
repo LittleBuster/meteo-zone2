@@ -157,15 +157,15 @@ uint8_t configs_load(const char *filename)
         fclose(file);
         return CFG_DB_IP_ERR;
     }
-    if (!configs_read_string(file, cfg.dbc.user, 19)) {
+    if (!configs_read_string(file, cfg.dbc.user, 254)) {
         fclose(file);
         return CFG_DB_USER_ERR;
     }
-    if (!configs_read_string(file, cfg.dbc.passwd, 19)) {
+    if (!configs_read_string(file, cfg.dbc.passwd, 254)) {
         fclose(file);
         return CFG_DB_PASSWD_ERR;
     }
-    if (!configs_read_string(file, cfg.dbc.base, 19)) {
+    if (!configs_read_string(file, cfg.dbc.base, 254)) {
         fclose(file);
         return CFG_DB_BASE_ERR;
     }

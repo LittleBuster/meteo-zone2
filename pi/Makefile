@@ -34,12 +34,13 @@ checker.o: checker.c
 
 install:
 	mkdir /usr/share/meteo
-	cp meteo.cfg /etc/
+	cp meteo.conf /etc/
 	cp meteo /usr/share/meteo/
+	chmod +x /usr/share/meteo/meteo
 
 remove:
 	rm -rf /usr/share/meteo/
-	rm /etc/meteo.cfg
+	rm /etc/meteo.conf
 
 clean:
 	-rm meteo

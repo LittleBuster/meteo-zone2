@@ -12,6 +12,7 @@
 #include "database.h"
 #include <stdio.h>
 #include <string.h>
+#include "utils.h"
 
 
 bool database_connect(struct database *db, const char *ip, const char *user, const char *passwd, const char *base)
@@ -27,15 +28,58 @@ bool database_connect(struct database *db, const char *ip, const char *user, con
 
 bool database_check_user(struct database *db, unsigned id, const char *key)
 {
-	return true;
+	int ret_val;
+    size_t count;
+    char num[20];
+    char query[255];
+    MYSQL_RES *result;
+
+    strcpy(query, "SELECT * FROM keys WHERE user=");
+
+    sprintf(num, "%u", id);
+    strcat(query, num);
+
+    strcat(query, " AND key=\"");
+    strcat(query, key);
+    strcat(query, "\"");
+
+    ret_val = mysql_query(db->base, query);
+    if (ret_val != 0)
+        return false;
+
+    result = mysql_store_result(db->base);
+    count = mysql_num_rows(result);
+
+    if (count != 0) {
+        mysql_free_result(result);
+        return true;
+    }
+	return false;
 }
 
 bool database_add_meteo(struct database *db, unsigned id, float temp, float hum)
 {
 	int ret_val;
+	char num[20];
 	char query[512];
+	char dtime[DATETIME_SIZE];
 
-	strcpy(query, "INSERT INTO meteo(id_usr, temp, hum, time) VALUES (\"");
+	date_time_now(dtime);
+	sprintf(num, "%u", id);
+
+	strcpy(query, "INSERT INTO meteo(user, temp, hum, time) VALUES (\"");
+	strcat(query, num);
+	strcat(query, "\", ");
+
+	sprintf(num, "%.2f", temp);
+	strcat(query, num);
+	strcat(query, ", ");
+
+	sprintf(num, "%.2f", hum);
+	strcat(query, num);
+	strcat(query, ", \"");
+	strcat(query, dtime);
+	strcat(query, "\")");
 
 	ret_val = mysql_query(db->base, query);
 	if (ret_val != 0)

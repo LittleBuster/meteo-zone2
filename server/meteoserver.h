@@ -14,28 +14,6 @@
 
 #include <stdbool.h>
 
-enum {
-	KEY_OK,
-	KEY_FAIL,
-	DATA_OK,
-	DATA_FAIL
-};
-
-struct server_answ {
-	unsigned code;
-};
-
-struct login_data {
-	unsigned id;
-	char key[65];
-};
-
-struct meteo_data {	
-	float temp;
-	float hum;
-};
-
-
 
 /*
  * Starting meteo server
