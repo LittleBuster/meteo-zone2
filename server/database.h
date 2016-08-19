@@ -32,7 +32,7 @@ struct database {
  * returns false: if fail connection
  * returns true: if connection ok
  */
-bool database_connect(struct database *db, const char *ip, const char *user, const char *passwd, const char *base);
+bool database_connect(struct database *restrict db, const char *ip, const char *user, const char *passwd, const char *base);
 
 /**
  * Checking new user id and key
@@ -43,7 +43,7 @@ bool database_connect(struct database *db, const char *ip, const char *user, con
  * returns false: if bad user id or key
  * returns true: if authentication ok
  */
-bool database_check_user(struct database *db, unsigned id, const char *key);
+bool database_check_user(struct database *restrict db, unsigned id, const char *key);
 
 /**
  * Adding new meteo data in base
@@ -55,12 +55,12 @@ bool database_check_user(struct database *db, unsigned id, const char *key);
  * returns false: if fail adding to base
  * returns true: if adding ok
  */
-bool database_add_meteo(struct database *db, unsigned id, float temp, float hum);
+bool database_add_meteo(struct database *restrict db, unsigned id, float temp, float hum);
 
 /*
  * Closing connection
  */
-void database_close(struct database *db);
+void database_close(struct database *restrict db);
 
 
 #endif

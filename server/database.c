@@ -15,7 +15,7 @@
 #include "utils.h"
 
 
-bool database_connect(struct database *db, const char *ip, const char *user, const char *passwd, const char *base)
+bool database_connect(struct database *restrict db, const char *ip, const char *user, const char *passwd, const char *base)
 {
 	db->base = mysql_init(NULL);
 
@@ -26,7 +26,7 @@ bool database_connect(struct database *db, const char *ip, const char *user, con
     return true;
 }
 
-bool database_check_user(struct database *db, unsigned id, const char *key)
+bool database_check_user(struct database *restrict db, unsigned id, const char *key)
 {
 	int ret_val;
     size_t count;
@@ -57,7 +57,7 @@ bool database_check_user(struct database *db, unsigned id, const char *key)
 	return false;
 }
 
-bool database_add_meteo(struct database *db, unsigned id, float temp, float hum)
+bool database_add_meteo(struct database *restrict db, unsigned id, float temp, float hum)
 {
 	int ret_val;
 	char num[20];
@@ -87,7 +87,7 @@ bool database_add_meteo(struct database *db, unsigned id, float temp, float hum)
 	return true;
 }
 
-void database_close(struct database *db)
+void database_close(struct database *restrict db)
 {
 	mysql_close(db->base);
 }
