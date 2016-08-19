@@ -51,13 +51,14 @@ static void checker_handle()
 			log_local("Fail reading data from outside sensor.", LOG_WARNING);
 			log_local(err.message, LOG_ERROR);
 		}
-		if (s_in && s_out) {
+		if (s_in && mdata.hum != 0.0f)
 			printf("Inside sensor: Temp: %.2f Hum: %.2f\n", mdata.temp, mdata.hum);
+		else
+			sleep(1);
+		if (s_out && hum_out != 0.0f) {
 			printf("Outside sensor: Temp: %.2f Hum: %.2f\n", temp_out, hum_out);
 			break;
 		}
-		else
-			sleep(1);
 		printf("Retry reading sensors... %d\n", (int)i);
 	}
 
