@@ -52,7 +52,6 @@ static int pos(const char *str, const char symb)
 static bool parse_string(const char *str, char *out, size_t sz)
 {
 	int p;
-    bool is_num = false;
     bool found = false;
     size_t len = 0;
 
@@ -63,7 +62,6 @@ static bool parse_string(const char *str, char *out, size_t sz)
         p = pos(str, '=');
         if (p == POS_NOT_FOUND)
             return false;
-        is_num = true;
     }
     str += p + 1;
 
@@ -83,10 +81,7 @@ static bool parse_string(const char *str, char *out, size_t sz)
         str++;
         len++;
     }
-    if (is_num)
-        *out = '\0';
-    else
-        *out = '\0';
+    *out = '\0';
     return true;
 }
 

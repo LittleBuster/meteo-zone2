@@ -46,6 +46,14 @@ static struct {
 } mserver;
 
 
+static void exit_fail(const char *message)
+{
+	pthread_mutex_lock(&mserver.mutex);
+	printf("%s\n", "FAIL!");
+	log_local(message, LOG_ERROR);
+	pthread_mutex_unlock(&mserver.mutex);
+}
+
 static void new_session(struct tcp_client *s_client, void *data)
 {
 	struct login_data ldata;
@@ -58,10 +66,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 	pthread_mutex_unlock(&mserver.mutex);
 
 	if (!tcp_client_recv(s_client, (void *)&ldata, sizeof(ldata))) {
-		pthread_mutex_lock(&mserver.mutex);
-		printf("%s\n", "FAIL!");
-		log_local("Fail receiving key data.", LOG_ERROR);
-		pthread_mutex_unlock(&mserver.mutex);
+		exit_fail("Fail receiving key data.");
 		return;
 	}
 	/*
@@ -90,10 +95,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 	answ.code = KEY_OK;
 
 	if (!tcp_client_send(s_client, (const void *)&answ, sizeof(answ))) {
-		pthread_mutex_lock(&mserver.mutex);
-		printf("%s\n", "FAIL!");
-		log_local("Fail sending key checking answare.", LOG_ERROR);
-		pthread_mutex_unlock(&mserver.mutex);
+		exit_fail("Fail sending key checking answare.");
 		database_close(&mserver.db);
 		return;
 	}
@@ -105,10 +107,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 		strcpy(msg, "Fail client authentication. ID:");
 		strcat(msg, id);
 
-		pthread_mutex_lock(&mserver.mutex);
-		printf("%s\n", "FAIL!");
-		log_local(msg, LOG_ERROR);
-		pthread_mutex_unlock(&mserver.mutex);
+		exit_fail(msg);
 		database_close(&mserver.db);
 		return;
 	}
@@ -118,10 +117,7 @@ static void new_session(struct tcp_client *s_client, void *data)
 
 	printf("%s", "Receiving meteo data...");
 	if (!tcp_client_recv(s_client, (void *)&mdata, sizeof(mdata))) {
-		pthread_mutex_lock(&mserver.mutex);
-		printf("%s\n", "FAIL!");
-		log_local("Fail receiving meteo answare.", LOG_ERROR);
-		pthread_mutex_unlock(&mserver.mutex);
+		exit_fail("Fail receiving meteo answare.");
 		answ.code = DATA_FAIL;
 		database_close(&mserver.db);
 		return;
@@ -129,18 +125,12 @@ static void new_session(struct tcp_client *s_client, void *data)
 	answ.code = DATA_OK;
 
 	if (!tcp_client_send(s_client, (const void *)&answ, sizeof(answ))) {
-		pthread_mutex_lock(&mserver.mutex);
-		printf("%s\n", "FAIL!");
-		log_local("Fail sending meteo answare.", LOG_ERROR);
-		pthread_mutex_unlock(&mserver.mutex);
+		exit_fail("Fail sending meteo answare.");
 		database_close(&mserver.db);
 		return;
 	}
 	if (answ.code != DATA_OK) {
-		pthread_mutex_lock(&mserver.mutex);
-		printf("%s\n", "FAIL!");
-		log_local("Fail meteo data.", LOG_ERROR);
-		pthread_mutex_unlock(&mserver.mutex);
+		exit_fail("Fail meteo data.");
 		database_close(&mserver.db);
 		return;
 	}
