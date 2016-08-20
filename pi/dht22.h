@@ -18,7 +18,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "utils.h"
 
 
 struct dht22 {
@@ -39,12 +38,11 @@ void dht22_init(struct dht22 *dht, uint8_t pin);
 * @dht: dht structure pointer
 * @temp: temperature pointer
 * @hum: humidity pointer
-* @err: if error then return message
 *
 * returns true: if complete reading data
 * returns false: if fail reading data
 */
-bool dht22_read_data(struct dht22 *dht, float *temp, float *hum, struct error *err);
+bool dht22_read_data(struct dht22 *dht, float *temp, float *hum);
 
 
 #endif

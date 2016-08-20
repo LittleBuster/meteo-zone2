@@ -40,7 +40,7 @@ void dht22_init(struct dht22 *dht, uint8_t pin)
     memset(dht->data, 0x00, sizeof(uint8_t)*5);
 }
 
-bool dht22_read_data(struct dht22 *dht, float *temp, float *hum, struct error *err)
+bool dht22_read_data(struct dht22 *dht, float *temp, float *hum)
 {
     uint32_t count = 0;
     uint32_t threshold = 0;
@@ -64,7 +64,6 @@ bool dht22_read_data(struct dht22 *dht, float *temp, float *hum, struct error *e
     while (gpio_read(dht->pin))
         if (++count >= DHT_MAXCOUNT) {
             gpio_default_priority();
-            strcpy(err->message, "Error timeout.");
             return false;
         }
 
@@ -73,14 +72,12 @@ bool dht22_read_data(struct dht22 *dht, float *temp, float *hum, struct error *e
         while (!gpio_read(dht->pin))
             if (++pulseCounts[i] >= DHT_MAXCOUNT) {
                 gpio_default_priority();
-                strcpy(err->message, "Error timeout.");
                 return false;
             }
 
         while (gpio_read(dht->pin))
             if (++pulseCounts[i+1] >= DHT_MAXCOUNT) {
                 gpio_default_priority();
-                strcpy(err->message, "Error timeout.");
                 return false;
             }
     }
@@ -109,7 +106,6 @@ bool dht22_read_data(struct dht22 *dht, float *temp, float *hum, struct error *e
         if (dht->data[2] & 0x80)
             *temp *= -1.0f;
     } else
-        strcpy(err->message, "Can not read data.");
-    strcpy(err->message, "");
+	return false;
     return true;
 }

@@ -13,15 +13,8 @@
 #define __UTILS_H__
 
 #define TIME_SIZE 15
+#define DATE_SIZE 20
 #define DATETIME_SIZE 30
-
-/*
- * Errors structure
- */
-struct error {
-	int code;
-	char message[255];
-};
 
 
 /*

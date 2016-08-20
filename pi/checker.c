@@ -30,7 +30,6 @@ static struct {
 static void checker_handle()
 {
 	float temp_out, hum_out;
-	struct error err;	
 	struct login_data ldata;
 	struct meteo_data mdata;
 	struct server_answ answ;
@@ -41,32 +40,33 @@ static void checker_handle()
 		bool s_in = false;
 		bool s_out = false;
 
-		s_in = dht22_read_data(&checker.dht_in, &mdata.temp, &mdata.hum, &err);
+		s_in = dht22_read_data(&checker.dht_in, &mdata.temp, &mdata.hum);
 		if (!s_in) {
 			log_local("Fail reading data from inside sensor.", LOG_WARNING);
-			log_local(err.message, LOG_ERROR);
 		}
-		s_out = dht22_read_data(&checker.dht_out, &temp_out, &hum_out, &err);
+		s_out = dht22_read_data(&checker.dht_out, &temp_out, &hum_out);
 		if (!s_out) {
 			log_local("Fail reading data from outside sensor.", LOG_WARNING);
-			log_local(err.message, LOG_ERROR);
 		}
-		if (s_in && mdata.hum != 0.0f)
-			printf("Inside sensor: Temp: %.2f Hum: %.2f\n", mdata.temp, mdata.hum);
-		else
-			sleep(1);
-		if (s_out && hum_out != 0.0f) {
-			printf("Outside sensor: Temp: %.2f Hum: %.2f\n", temp_out, hum_out);
+		if (s_out && hum_out != 0.0f) 
+			printf("Outside sensor: Temp: %.2f* Hum: %.2f%%\n", temp_out, hum_out);
+		if (s_in && mdata.hum != 0.0f) {
+			printf("Inside sensor: Temp: %.2f* Hum: %.2f%%\n", mdata.temp, mdata.hum);
 			break;
 		}
+		else
+			sleep(1);
 		printf("Retry reading sensors... %d\n", (int)i);
 	}
 
-	puts("Sending data to server.");
+	printf("Sending data to server...");
 	if (!tcp_client_connect(&checker.client, sc->ip, sc->port)) {
+		puts("FAIL.");
 		log_local("Fail connecting to server!", LOG_ERROR);
+		puts("===============================================");
 		return;
 	}
+	puts("OK.");
 	ldata.id = dc->id;
 	strncmp(ldata.key, dc->key, 64);
 	printf("%s", "Login...");
@@ -75,18 +75,21 @@ static void checker_handle()
 		tcp_client_close(&checker.client);
 		printf("%s\n", "FAIL!");
 		log_local("Fail sending key data.", LOG_ERROR);
+		puts("===============================================");
 		return;
 	}
 	if (!tcp_client_recv(&checker.client, (void *)&answ, sizeof(answ))) {
 		tcp_client_close(&checker.client);
 		printf("%s\n", "FAIL!");
 		log_local("Fail receiving key checking answare.", LOG_ERROR);
+		puts("===============================================");
 		return;
 	}
 	if (answ.code != KEY_OK) {
 		printf("%s\n", "FAIL!");
 		log_local("Fail authentication.", LOG_ERROR);
 		tcp_client_close(&checker.client);
+		puts("===============================================");
 		return;
 	}
 	printf("%s\n", "OK.");
@@ -96,22 +99,26 @@ static void checker_handle()
 		tcp_client_close(&checker.client);
 		printf("%s\n", "FAIL!");
 		log_local("Fail sending meteo answare.", LOG_ERROR);
+		puts("===============================================");
 		return;
 	}
 	if (!tcp_client_recv(&checker.client, (void *)&answ, sizeof(answ))) {
 		tcp_client_close(&checker.client);
 		printf("%s\n", "FAIL!");
 		log_local("Fail receiving meteo answare.", LOG_ERROR);
+		puts("===============================================");
 		return;
 	}
 	if (answ.code != DATA_OK) {
 		printf("%s\n", "FAIL!");
 		log_local("Server: Fail meteo data.", LOG_ERROR);
 		tcp_client_close(&checker.client);
+		puts("===============================================");
 		return;
 	}
 	printf("%s\n", "OK.");
 	tcp_client_close(&checker.client);
+	puts("===============================================");
 }
 
 bool checker_start(void)

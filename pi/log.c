@@ -56,6 +56,7 @@ bool log_local(const char *message, unsigned log_type)
 	}
 	strcat(out_msg, message);
 	puts(out_msg);
+	strcat(out_msg, "\n");
 
 	file = fopen(log.path, "a");
 	if (file == NULL)

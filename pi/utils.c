@@ -29,19 +29,19 @@ void date_now(char *date_str)
     struct tm *timeinfo;
 
     timeinfo = localtime (&t);
-    strftime(date_str, TIME_SIZE, "%F", timeinfo);
+    strftime(date_str, DATE_SIZE, "%F", timeinfo);
 }
 
 void date_time_now(char *date_time)
 {
     char time_str[TIME_SIZE];
-    char date_str[TIME_SIZE];
+    char date_str[DATE_SIZE];
 
     time_t t = time(NULL);
     struct tm *timeinfo;
 
     timeinfo = localtime (&t);
-    strftime(date_str, TIME_SIZE, "%F", timeinfo);
+    strftime(date_str, DATE_SIZE, "%F", timeinfo);
     strftime(time_str, TIME_SIZE, "%T", timeinfo);
 
     strcpy(date_time, date_str);
